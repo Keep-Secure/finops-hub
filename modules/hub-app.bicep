@@ -35,8 +35,8 @@ param appVersion string = ''
 @description('Optional. Indicate which features the app requires. Allowed values: "Storage". Default: [] (none).')
 param features HubAppFeature[] = []
 
-@description('Optional. Custom string with additional metadata to log. Must an alphanumeric string without spaces or special characters except for underscores and dashes. Namespace + appName + telemetryString must be 50 characters or less - additional characters will be trimmed.')
-param telemetryString string = ''
+// @description('Optional. Custom string with additional metadata to log. Must an alphanumeric string without spaces or special characters except for underscores and dashes. Namespace + appName + telemetryString must be 50 characters or less - additional characters will be trimmed.')
+// param telemetryString string = ''
 
 //------------------------------------------------------------------------------
 // Temporary parameters that should be removed in the future
@@ -59,21 +59,21 @@ var usesKeyVault = contains(features, 'KeyVault')
 var usesStorage = contains(features, 'Storage')
 
 // App telemetry
-var telemetryId = 'ftk-hubapp-${appConfig.app.fullName}${empty(telemetryString) ? '' : '_'}${telemetryString}'  // cSpell:ignore hubapp
-var telemetryProps = {
-  mode: 'Incremental'
-  template: {
-    '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
-    contentVersion: '1.0.0.0'
-    metadata: {
-      _generator: {
-        name: 'FTK: ${publisher} - ${displayName} ${telemetryId}'
-        version: appVersion
-      }
-    }
-    resources: []
-  }
-}
+// var telemetryId = 'ftk-hubapp-${appConfig.app.fullName}${empty(telemetryString) ? '' : '_'}${telemetryString}'  // cSpell:ignore hubapp
+// var telemetryProps = {
+//   mode: 'Incremental'
+//   template: {
+//     '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
+//     contentVersion: '1.0.0.0'
+//     metadata: {
+//       _generator: {
+//         name: 'FTK: ${publisher} - ${displayName} ${telemetryId}'
+//         version: appVersion
+//       }
+//     }
+//     resources: []
+//   }
+// }
 
 // Storage infrastructure encryption
 var storageInfrastructureEncryptionProperties = !coreConfig.storage.isInfrastructureEncrypted ? {} : {
@@ -106,11 +106,11 @@ var keyVaultAccessPolicies = [
 // No information about you or your cost data is collected.
 //------------------------------------------------------------------------------
 
-resource appTelemetry 'Microsoft.Resources/deployments@2022-09-01' = if (coreConfig.deployment.isTelemetryEnabled) {
-  name: length(telemetryId) <= 64 ? telemetryId : substring(telemetryId, 0, 64)
-  tags: getAppTags(appConfig, 'Microsoft.Resources/deployments', true)
-  properties: telemetryProps
-}
+// resource appTelemetry 'Microsoft.Resources/deployments@2022-09-01' = if (coreConfig.deployment.isTelemetryEnabled) {
+//   name: length(telemetryId) <= 64 ? telemetryId : substring(telemetryId, 0, 64)
+//   tags: getAppTags(appConfig, 'Microsoft.Resources/deployments', true)
+//   properties: telemetryProps
+// }
 
 //------------------------------------------------------------------------------
 // TODO: Get hub details

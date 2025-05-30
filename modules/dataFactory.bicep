@@ -318,7 +318,7 @@ module approveDataExplorerPrivateEndpointConnections 'dataExplorerEndpoints.bice
 
 // Create managed identity to start/stop triggers
 resource triggerManagerIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: '${dataFactory.name}_triggerManager'
+  name: 'svc${hubName}TriggerManager'
   location: location
   tags: union(tags, tagsByResource[?'Microsoft.ManagedIdentity/userAssignedIdentities'] ?? {})
 }

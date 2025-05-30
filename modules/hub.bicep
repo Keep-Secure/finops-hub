@@ -11,6 +11,9 @@ import { getHubTags, getPublisherTags, HubCoreConfig, newHubCoreConfig } from 'h
 @description('Optional. Name of the hub. Used to ensure unique resource names. Default: "finops-hub".')
 param hubName string
 
+@description('Abbreviation for the environment (dev, tst, prd, etc.).')
+param environmentName string
+
 @description('Optional. Azure location where all resources should be created. See https://aka.ms/azureregions. Default: (resource group location).')
 param location string = resourceGroup().location
 
@@ -171,6 +174,7 @@ param enableDefaultTelemetry bool = true
 // Hub details
 var coreConfig = newHubCoreConfig(
   hubName,
+  environmentName,
   location,
   tags,
   tagsByResource,
@@ -224,23 +228,23 @@ var safeDataExplorerSubnetId = enablePublicAccess ? '' : infrastructure.outputs.
 
 // The last segment of the GUID in the telemetryId (40b) is used to identify this module
 // Remaining characters identify settings; must be <= 12 chars -- Example: (guid)_RLXD##x1000P
-var telemetryId = '00f120b5-2007-6120-0000-40b000000000'
-var telemetryString = join([
-  // R = remote hubs enabled
-  empty(remoteHubStorageUri) || empty(remoteHubStorageKey) ? '' : 'R'
-  // L = LRS, Z = ZRS
-  substring(split(storageSku, '_')[1], 0, 1)
-  // F = Fabric enabled
-  !useFabric ? '' : 'F${fabricCapacityUnits}'
-  // X = ADX enabled + D (dev) or S (standard) SKU
-  !deployDataExplorer ? '' : 'X${substring(dataExplorerSku, 0, 1)}'
-  // Number of cores in the VM size
-  !deployDataExplorer ? '' : replace(replace(replace(replace(replace(replace(replace(replace(split(split(dataExplorerSku, 'Standard_')[1], '_')[0], 'C', ''), 'D', ''), 'E', ''), 'L', ''), 'a', ''), 'd', ''), 'i', ''), 's', '')
-  // Number of nodes in the cluster
-  !deployDataExplorer || dataExplorerCapacity == 1 ? '' : 'x${dataExplorerCapacity}'
-  // P = private endpoints enabled
-  enablePublicAccess ? '' : 'P'
-], '')
+// var telemetryId = '00f120b5-2007-6120-0000-40b000000000'
+// var telemetryString = join([
+//   // R = remote hubs enabled
+//   empty(remoteHubStorageUri) || empty(remoteHubStorageKey) ? '' : 'R'
+//   // L = LRS, Z = ZRS
+//   substring(split(storageSku, '_')[1], 0, 1)
+//   // F = Fabric enabled
+//   !useFabric ? '' : 'F${fabricCapacityUnits}'
+//   // X = ADX enabled + D (dev) or S (standard) SKU
+//   !deployDataExplorer ? '' : 'X${substring(dataExplorerSku, 0, 1)}'
+//   // Number of cores in the VM size
+//   !deployDataExplorer ? '' : replace(replace(replace(replace(replace(replace(replace(replace(split(split(dataExplorerSku, 'Standard_')[1], '_')[0], 'C', ''), 'D', ''), 'E', ''), 'L', ''), 'a', ''), 'd', ''), 'i', ''), 's', '')
+//   // Number of nodes in the cluster
+//   !deployDataExplorer || dataExplorerCapacity == 1 ? '' : 'x${dataExplorerCapacity}'
+//   // P = private endpoints enabled
+//   enablePublicAccess ? '' : 'P'
+// ], '')
 
 
 //==============================================================================
@@ -251,24 +255,24 @@ var telemetryString = join([
 // Telemetry
 //------------------------------------------------------------------------------
 
-resource telemetry 'Microsoft.Resources/deployments@2022-09-01' = if (enableDefaultTelemetry) {
-  name: 'pid-${telemetryId}_${telemetryString}_${uniqueString(deployment().name, location)}'
-  tags: getHubTags(coreConfig, 'Microsoft.Resources/deployments')
-  properties: {
-    mode: 'Incremental'
-    template: {
-      '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
-      contentVersion: '1.0.0.0'
-      metadata: {
-        _generator: {
-          name: 'FinOps toolkit'
-          version: loadTextContent('ftkver.txt') // cSpell:ignore ftkver
-        }
-      }
-      resources: []
-    }
-  }
-}
+// resource telemetry 'Microsoft.Resources/deployments@2022-09-01' = if (enableDefaultTelemetry) {
+//   name: 'pid-${telemetryId}_${telemetryString}_${uniqueString(deployment().name, location)}'
+//   tags: getHubTags(coreConfig, 'Microsoft.Resources/deployments')
+//   properties: {
+//     mode: 'Incremental'
+//     template: {
+//       '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
+//       contentVersion: '1.0.0.0'
+//       metadata: {
+//         _generator: {
+//           name: 'FinOps toolkit'
+//           version: loadTextContent('ftkver.txt') // cSpell:ignore ftkver
+//         }
+//       }
+//       resources: []
+//     }
+//   }
+// }
 
 //------------------------------------------------------------------------------
 // Base resources needed for hub apps
@@ -302,7 +306,7 @@ module appRegistration 'hub-app.bicep' = {
       'DataFactory'
       'Storage'
     ]
-    telemetryString: telemetryString
+    // telemetryString: telemetryString
 
     coreConfig: coreConfig
   }
@@ -318,6 +322,7 @@ module storage 'storage.bicep' = {
     infrastructure
   ]
   params: {
+    hubName: hubName
     storageAccountName: appRegistration.outputs.config.publisher.storage
     location: location
     tags: coreConfig.hub.tags

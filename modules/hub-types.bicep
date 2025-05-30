@@ -26,6 +26,7 @@ type IdNameObject = { id: string, name: string }
   name: 'FinOps hub instance name.'
   safeName: 'Safe name of the FinOps hub instance without underscores.'
   suffix: 'Unique suffix used for shared resources.'
+  environmentName: 'Abbreviation for the environment (dev, tst, prd).'
   location: 'Azure resource location of the FinOps hub instance.'
   tags: 'Tags to apply to all FinOps hub resources.'
   version: 'FinOps hub version number.'
@@ -35,6 +36,7 @@ type HubInstanceConfig = {
   name: string
   safeName: string
   suffix: string
+  environmentName: string
   location: string
   tags: object
   version: string
@@ -225,6 +227,7 @@ func newHubCoreConfigInternal(
   name string,
   safeName string,
   suffix string,
+  environmentName string,
   location string,
   tags object,
   tagsByResource object,
@@ -241,6 +244,7 @@ func newHubCoreConfigInternal(
     name: name
     safeName: safeName
     suffix: suffix
+    environmentName: environmentName
     location: location ?? resourceGroup().location
     tags: union(tags, {
       'cm-resource-parent': id  // cm-resource-parent tag groups resources in Cost Management
@@ -308,6 +312,7 @@ func newHubCoreConfigInternal(
 @description('Creates a new FinOps hub configuration object.')
 func newHubCoreConfig(
   name string,
+  environmentName string,
   location string,
   tags object,
   tagsByResource object,
@@ -318,10 +323,11 @@ func newHubCoreConfig(
   networkAddressPrefix string,
   isTelemetryEnabled bool,
 ) HubCoreConfig => newHubCoreConfigInternal(
-  '${resourceGroup().id}/providers/Microsoft.Cloud/hubs/${name}',  // id
+  '${resourceGroup().id}/providers/Microsoft.Cloud/hubs/${toLower(name)}',  // id
   name,
   safeName(name),                          // safeName
   uniqueString(name, resourceGroup().id),  // suffix
+  environmentName,
   location,
   tags,
   tagsByResource,
@@ -359,13 +365,13 @@ func newAppInternalConfig(
     tags: union(coreConfig.hub.tags, publisherTags)
 
     // Globally unique Data Factory name: 3-63 chars; letters, numbers, non-repeating dashes
-    dataFactory: replace('${take('${replace(coreConfig.hub.name, '_', '-')}-engine', 63 - length(publisherSuffix))}${publisherSuffix}', '--', '-')
+    dataFactory: replace('adf-${take('${replace(toLower(coreConfig.hub.name), '_', '-')}-${coreConfig.hub.environmentName}', 63)}', '--', '-')
 
     // Globally unique KeyVault name: 3-24 chars; letters, numbers, dashes
-    keyVault: replace('${take('${replace(coreConfig.hub.name, '_', '-')}-vault', 24 - length(publisherSuffix))}${publisherSuffix}', '--', '-')
+    keyVault: replace('kv-${take('${replace(toLower(coreConfig.hub.name), '_', '-')}', 24 - length('-${coreConfig.hub.environmentName}'))}-${coreConfig.hub.environmentName}', '--', '-')
 
     // Globally unique storage account name: 3-24 chars; lowercase letters/numbers only
-    storage: '${take(coreConfig.hub.safeName, 24 - length(publisherSuffix))}${publisherSuffix}'
+    storage: 'st${take(coreConfig.hub.safeName, 24 - length('${coreConfig.hub.environmentName}001'))}${coreConfig.hub.environmentName}001'
   }
   app: {
     // id: '${hubResourceId}/publishers/${namespace}/apps/${appName}'

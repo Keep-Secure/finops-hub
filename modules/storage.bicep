@@ -5,6 +5,9 @@
 // Parameters
 //==============================================================================
 
+@description('Name of the hub. Used for managed identity name.')
+param hubName string
+
 @description('Required. Name of the storage account.')
 param storageAccountName string
 
@@ -142,7 +145,7 @@ module ingestionContainer 'hub-storage.bicep' = {
 
 // Create managed identity to upload files
 resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: '${storageAccountName}_blobManager'
+  name: 'svc${hubName}BlobManager'
   tags: union(tags, tagsByResource[?'Microsoft.ManagedIdentity/userAssignedIdentities'] ?? {})
   location: location
 }
