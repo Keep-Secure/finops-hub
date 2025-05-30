@@ -10,6 +10,9 @@ targetScope = 'resourceGroup'
 @description('Optional. Name of the hub. Used to ensure unique resource names. Default: "finops-hub".')
 param hubName string
 
+@description('Abbreviation for the environment (dev, tst, prd, etc.).')
+param environmentName string
+
 @description('Optional. Azure location where all resources should be created. See https://aka.ms/azureregions. Default: Same as deployment.')
 param location string = resourceGroup().location
 
@@ -156,6 +159,7 @@ module hub 'modules/hub.bicep' = {
   name: 'hub'
   params: {
     hubName: hubName
+    environmentName: environmentName
     location: location
     // eventGridLocation: eventGridLocation
     storageSku: storageSku

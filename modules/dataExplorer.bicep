@@ -320,7 +320,7 @@ module ingestion_SetupScript 'hub-database.bicep' = {
     clusterName: cluster.name
     databaseName: cluster::ingestionDb.name
     scripts: {
-      setupScript: replace(loadTextContent('scripts/IngestionSetup.kql'), '$$rawRetentionInDays$$', string(rawRetentionInDays))
+      // setupScript: replace(loadTextContent('scripts/IngestionSetup.kql'), '$$rawRetentionInDays$$', string(rawRetentionInDays))
     }
     continueOnErrors: continueOnErrors
     forceUpdateTag: forceUpdateTag
