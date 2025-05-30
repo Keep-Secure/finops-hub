@@ -38,12 +38,25 @@
         "name": "hubName",
         "type": "Microsoft.Common.TextBox",
         "label": "Hub name",
-        "defaultValue": "finops-hub",
+        "defaultValue": "Finopshub",
         "toolTip": "Name of the FinOps hub instance. Used to ensure unique resource names.",
         "constraints": {
           "required": true,
           "regex": "^[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]$",
-          "validationMessage": "Name must be between 3 and 63 characters long and can contain only lowercase letters, numbers, and hyphens. The first and last characters in the name must be alphanumeric."
+          "validationMessage": "Name must be between 3 and 63 characters long and can contain letters, numbers, and hyphens. The first and last characters in the name must be alphanumeric."
+        },
+        "visible": true
+      },
+      {
+        "name": "environmentName",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Environment name",
+        "defaultValue": "dev",
+        "toolTip": "Name of the environment (dev, tst, prd). Used in resource naming.",
+        "constraints": {
+          "required": true,
+          "regex": "^[a-z0-9]{3,4}$",
+          "validationMessage": "Name must be between 3 and 4 characters long and can only contain lowercase letters and numbers."
         },
         "visible": true
       },
@@ -703,6 +716,7 @@
     ],
     "outputs": {
       "hubName": "[basics('hubName')]",
+      "environmentName": "[basics('environmentName')]",
       "location": "[location()]",
       "storageSku": "[steps('pricing').storage.storageSku]",
       "dataExplorerName": "[basics('dataExplorer').dataExplorerName]",
