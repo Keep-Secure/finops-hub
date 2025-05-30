@@ -19,8 +19,7 @@ languages:
 
 # FinOps hub
 
-[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FKeep-Secure%2Ffinops-hub%2Fmain%2Ffinops-hub%2Fazuredeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2FKeep-Secure%2Ffinops-hub%2Fmain%2Ffinops-hub%2FcreateUiDefinition.json)
-[![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.svg?sanitize=true)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FKeep-Secure%2Ffinops-hub%2Fmain%2Ffinops-hub%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FKeep-Secure%2Ffinops-hub%2Frefs%2Fheads%2Fmain%2Fmain.bicep)
 
 This template creates a new **FinOps hub** instance. FinOps hubs are a foundation you can use to build homegrown cost management and optimization solutions.
 
@@ -54,7 +53,7 @@ If you run into any issues, see [Troubleshooting FinOps hubs](https://aka.ms/fin
 1. Register the Microsoft.EventGrid and Microsoft.CostManagementExports resource providers
    > See [Register a resource provider](https://docs.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider) for details.
 2. Deploy the template
-   > [![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FKeep-Secure%2Ffinops-hub%2Fmain%2Ffinops-hub%2Fazuredeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2FKeep-Secure%2Ffinops-hub%2Fmain%2Ffinops-hub%2FcreateUiDefinition.json)
+   > [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FKeep-Secure%2Ffinops-hub%2Frefs%2Fheads%2Fmain%2Fmain.bicep)
 3. [Create a new cost export](https://learn.microsoft.com/azure/cost-management-billing/costs/tutorial-export-acm-data?tabs=azure-portal) using the following settings:
    - **Type of data** = `Cost and usage details (FOCUS)`
    - **Dataset version** = `1.0` or `1.0r2`
